@@ -52,8 +52,11 @@ def fit_model_params(var):
     """SMC HYPERPARAMS"""
     PARTICLES=200
     MCMC_STEPS=5
-    
+    ESS_THRESHOLD=0.75
+    multisource_num_pts = None
+
     center = [0,0]
+    
     training_data = generate_noisy_data(var, center=center)
     circle = AGraph()
     circle.command_array = np.array([[ 1,  0,  0],
@@ -70,28 +73,28 @@ def fit_model_params(var):
     f, df = circle.evaluate_equation_with_x_gradient_at(training_data.x)
     
     fitness = ImplicitRegression(training_data)
+    clo = ContinuousLocalOptimization(fitness, algorithm='lm')
 
     norm_phi = 1 / np.sqrt(training_data.x.shape[0])
-    param_names, priors = bff._create_priors(model, multisource_num_pts,
-                                                                particles)
-    proposal = bff.generate_proposal_samples(model, particles, param_names)
+    param_names, priors = bff._create_priors(circle, multisource_num_pts,
+                                                                PARTICLES)
+    proposal = bff.generate_proposal_samples(circle, PARTICLES, param_names)
     log_like_args = [multisource_num_pts, 
                                     tuple([None]*len(multisource_num_pts))]
     log_like_func = MultiSourceNormal
-    vector_mcmc = VectorMCMC(lambda x: bff.evaluate_model(x, model),
-                                       y_noisy.flatten(), 
+    vector_mcmc = VectorMCMC(lambda x: custom_eval(x, circle),
+                                       finite_dif_df, 
                                        priors, log_like_args, log_like_func)
     mcmc_kernel = VectorMCMCKernel(vector_mcmc, param_order=param_names)
     smc = AdaptiveSampler(mcmc_kernel)
 
-    step_list, marginal_log_likes = smc.sample(particles, mcmc_steps, 
-                                               ess_threshold, 
+    step_list, marginal_log_likes = smc.sample(PARTICLES, MCMC_STEPS, 
+                                               ESS_THRESHOLD, 
                                                proposal=proposal, 
                                                required_phi=norm_phi)
     nmll = -1 * (marginal_log_likes[-1] -
                                  marginal_log_likes[smc.req_phi_index[0]])
     
-    clo = ContinuousLocalOptimization(fitness, algorithm='lm')
     
 
     plt.scatter(training_data.x[:,0], training_data.x[:,1])
