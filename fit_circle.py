@@ -2,6 +2,7 @@ import glob
 import numpy as np
 import os
 import sys
+import matplotlib.pyplot as plt
 
 from bingo.local_optimizers.continuous_local_opt \
         import ContinuousLocalOptimization
@@ -25,7 +26,7 @@ from bingo.symbolic_regression.implicit_regression \
         import ImplicitRegression, ImplicitTrainingData
 from bingo.symbolic_regression.agraph.agraph import AGraph
 
-def generate_noisy_data(var):
+def generate_noisy_data(var, center=[0,0]):
     data = np.load('noisycircledata.npy')
     training_data = ImplicitTrainingData(data[:,0:2])#, window_size=7, order=1)
     return training_data
@@ -51,12 +52,9 @@ def fit_model_params(var):
     """SMC HYPERPARAMS"""
     PARTICLES=200
     MCMC_STEPS=5
-
-    training_data = generate_noisy_data(var)
-
-    fitness = ImplicitRegression(training_data)
-
-    clo = ContinuousLocalOptimization(fitness, algorithm='lm')
+    
+    center = [0,0]
+    training_data = generate_noisy_data(var, center=center)
     circle = AGraph()
     circle.command_array = np.array([[ 1,  0,  0],
                                       [ 0,  0,  0],
@@ -68,9 +66,35 @@ def fit_model_params(var):
                                       [ 2,  5,  6],
                                       [10,  7,  3],
                                       [ 2,  4,  8]])
-    circle.constants.append(-2.3)
-    circle.constants.append(3.4)
+    circle.set_local_optimization_params(center)
+    f, df = circle.evaluate_equation_with_x_gradient_at(training_data.x)
     
+    fitness = ImplicitRegression(training_data)
+
+    norm_phi = 1 / np.sqrt(training_data.x.shape[0])
+    param_names, priors = bff._create_priors(model, multisource_num_pts,
+                                                                particles)
+    proposal = bff.generate_proposal_samples(model, particles, param_names)
+    log_like_args = [multisource_num_pts, 
+                                    tuple([None]*len(multisource_num_pts))]
+    log_like_func = MultiSourceNormal
+    vector_mcmc = VectorMCMC(lambda x: bff.evaluate_model(x, model),
+                                       y_noisy.flatten(), 
+                                       priors, log_like_args, log_like_func)
+    mcmc_kernel = VectorMCMCKernel(vector_mcmc, param_order=param_names)
+    smc = AdaptiveSampler(mcmc_kernel)
+
+    step_list, marginal_log_likes = smc.sample(particles, mcmc_steps, 
+                                               ess_threshold, 
+                                               proposal=proposal, 
+                                               required_phi=norm_phi)
+    nmll = -1 * (marginal_log_likes[-1] -
+                                 marginal_log_likes[smc.req_phi_index[0]])
+    
+    clo = ContinuousLocalOptimization(fitness, algorithm='lm')
+    
+
+    plt.scatter(training_data.x[:,0], training_data.x[:,1])
     import pdb;pdb.set_trace()
 
 if __name__ == "__main__":
