@@ -48,7 +48,7 @@ def custom_eval(x, model, training_data, const):
     for i, x_set in enumerate(x):
         model.set_local_optimization_params(x_set.T)
         f, df = model.evaluate_equation_with_x_gradient_at(training_data.x)
-        output[:,i] = f.flatten() -const
+        output[:,i] = f.flatten() #-const
     return output.T
 
 def fit_model_params(var):
@@ -84,13 +84,17 @@ def fit_model_params(var):
                                       [10,  7,  3],
                                       [ 2,  4,  8]])
     circle.set_local_optimization_params(center)
+    circle._needs_opt = True
     dx = training_data.dx_dt
     output = circle.evaluate_equation_at(training_data.x)
     const = np.mean(output)
-    training_data.y = output - const 
+    training_data.y = output #- const 
 
     fitness = ImplicitRegression(training_data)
     clo = ContinuousLocalOptimization(fitness, algorithm='lm')
+    clo(circle)
+    import pdb;pdb.set_trace()
+    print(f'fitted circle: {str(circle)}\n')
 
     bff = BayesFitnessFunction(clo)
 
@@ -104,7 +108,6 @@ def fit_model_params(var):
 
     log_like_args = [multisource_num_pts, tuple([None])]
     log_like_func = MultiSourceNormal
-    import pdb;pdb.set_trace()
     vector_mcmc = VectorMCMC(lambda x: custom_eval(x, circle, training_data, const),
                                        training_data.y.flatten(), 
                                        priors, log_like_args, log_like_func)
