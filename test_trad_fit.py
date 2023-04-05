@@ -43,12 +43,12 @@ def build_component_generator(training_data, operators):
 
     return component_generator
 
-def custom_eval(x, model, training_data):
+def custom_eval(x, model, training_data, const):
     output = np.empty((training_data.x.shape[0], x.shape[0]))
     for i, x_set in enumerate(x):
         model.set_local_optimization_params(x_set.T)
         f, df = model.evaluate_equation_with_x_gradient_at(training_data.x)
-        output[:,i] = df[:,0] / df[:,1]
+        output[:,i] = f.flatten() #-const
     return output.T
 
 def fit_model_params(var):
@@ -70,7 +70,6 @@ def fit_model_params(var):
     center = [0,0]
     
     training_data = generate_noisy_data(var, center=center)
-    training_data.y = np.ones((training_data.x.shape[0],1))
     multisource_num_pts = (training_data.x.shape[0],)
 
     circle = AGraph()
@@ -85,24 +84,32 @@ def fit_model_params(var):
                                       [10,  7,  3],
                                       [ 2,  4,  8]])
     circle.set_local_optimization_params(center)
+    circle._needs_opt = True
     dx = training_data.dx_dt
-    finite_dif_dx  = (dx[:,0] / dx[:,1]).flatten()
+    output = circle.evaluate_equation_at(training_data.x)
+    const = np.mean(output)
+    training_data.y = output #- const 
+
     fitness = ImplicitRegression(training_data)
     clo = ContinuousLocalOptimization(fitness, algorithm='lm')
+    clo(circle)
+    import pdb;pdb.set_trace()
+    print(f'fitted circle: {str(circle)}\n')
+
     bff = BayesFitnessFunction(clo)
 
     norm_phi = 1 / np.sqrt(training_data.x.shape[0])
     param_names, priors = bff._create_priors(circle, multisource_num_pts,
                                                                 PARTICLES)
     proposal = bff.generate_proposal_samples(circle, PARTICLES, param_names)
-    proposal[0]['p0'] = np.random.normal(loc=0, scale=0.001, size=PARTICLES)
-    proposal[0]['p1'] = np.random.normal(loc=0, scale=0.001, size=PARTICLES)
-    proposal[0]['std_dev0'] = np.random.normal(loc=0, scale=0.001, size=PARTICLES)
+    #proposal[0]['p0'] = np.random.normal(loc=0, scale=0.01, size=PARTICLES)
+    #proposal[0]['p1'] = np.random.normal(loc=0, scale=0.01, size=PARTICLES)
+    #proposal[0]['std_dev0'] = np.random.normal(loc=0, scale=0.01, size=PARTICLES)
 
     log_like_args = [multisource_num_pts, tuple([None])]
     log_like_func = MultiSourceNormal
-    vector_mcmc = VectorMCMC(lambda x: custom_eval(x, circle, training_data),
-                                       finite_dif_dx, 
+    vector_mcmc = VectorMCMC(lambda x: custom_eval(x, circle, training_data, const),
+                                       training_data.y.flatten(), 
                                        priors, log_like_args, log_like_func)
     mcmc_kernel = VectorMCMCKernel(vector_mcmc, param_order=param_names)
     smc = AdaptiveSampler(mcmc_kernel)
@@ -114,8 +121,7 @@ def fit_model_params(var):
     nmll = -1 * (marginal_log_likes[-1] -
                                  marginal_log_likes[smc.req_phi_index[0]])
     
-    
-    import pdb;pdb.set_trace()
+    import pdb;pdb.set_trace() 
     plt.scatter(training_data.x[:,0], training_data.x[:,1])
 
 if __name__ == "__main__":
