@@ -15,6 +15,8 @@ from bingo.local_optimizers.local_opt_fitness import LocalOptFitnessFunction
 from bingo.symbolic_regression.explicit_regression import ExplicitRegression, ExplicitTrainingData
 from bingo.symbolic_regression.implicit_regression import ImplicitRegression, ImplicitTrainingData
 from bingo.symbolic_regression.agraph.agraph import AGraph
+from bingo.symbolic_regression.bayes_fitness.zero_check_bff \
+        import BayesFitnessFunction
 
 def get_eqn(filename, hof_index=0):
     archipelago = load_parallel_archipelago_from_file(filename)
