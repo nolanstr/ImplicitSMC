@@ -5,9 +5,9 @@ theta = np.linspace(0, 2*np.pi, 100)
 x = np.cos(theta)
 y = np.sin(theta)
 for i in range(theta.shape[0]):
-	x[i] += np.random.normal(0, 0.0005)
+	x[i] += np.random.normal(0, 0.05)
 for i in range(theta.shape[0]):
-	y[i] += np.random.normal(0, 0.0005)
+	y[i] += np.random.normal(0, 0.05)
 
 data_x = np.zeros((100, 3))
 data_x[:,0] = x
