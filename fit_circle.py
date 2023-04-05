@@ -85,10 +85,12 @@ def fit_model_params(var):
                                       [10,  7,  3],
                                       [ 2,  4,  8]])
     circle.set_local_optimization_params(center)
+    circle._needs_opt = True
     dx = training_data.dx_dt
     finite_dif_dx  = (dx[:,0] / dx[:,1]).flatten()
     fitness = ImplicitRegression(training_data)
     clo = ContinuousLocalOptimization(fitness, algorithm='lm')
+    import pdb;pdb.set_trace()
     bff = BayesFitnessFunction(clo)
 
     norm_phi = 1 / np.sqrt(training_data.x.shape[0])

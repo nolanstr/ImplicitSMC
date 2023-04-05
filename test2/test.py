@@ -26,14 +26,10 @@ def get_eqn(filename, hof_index=0):
     
     return equation, data.x    
 
-PARTICLES=200
-MCMC_STEPS=50
-hof_index = 22
-num_reps = 50
 data = np.load("noisycircledata.npy")
 implicitdata = ImplicitTrainingData(data)
 fitness = ImplicitRegression(implicitdata)
-optimizer = ScipyOptimizer(fitness, method='lm', param_init_bounds=[-10.,10.], options={'maxiter':1000})
+optimizer = ScipyOptimizer(fitness, method='lm', param_init_bounds=[-1.,1.], options={'maxiter':1000})
 clo = LocalOptFitnessFunction(fitness, optimizer)
 fitcheck_base = ImplicitRegression(implicitdata)
 
@@ -45,7 +41,7 @@ for j in range(0,50):
     mean_const = np.mean(eqn_act.evaluate_equation_at(data))
     y_data = np.ones(86)
     print(np.mean(np.abs(fit_base)))
-
+    import pdb;pdb.set_trace()
 mean_const = np.mean(eqn_act.evaluate_equation_at(data))
 import pdb;pdb.set_trace()
 y_data = np.ones(86)*mean_const
