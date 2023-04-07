@@ -28,6 +28,8 @@ from mpi4py import MPI
 num_particles = 100
 mcmc_steps = 10
 ess_threshold = 0.75
+lower=10
+cust_priors = [uniform(-lower, 2*lower), uniform(-lower,2*lower), uniform(0,50)]
 
 class ImplicitLikelihood(BaseLogLike):
 
@@ -64,8 +66,12 @@ def eval_model(ind, data, params):
 
 def run_SMC(ind, training_data):
     
-    priors = [uniform(-2,4), uniform(-2,4), uniform(0,100000)]
+    priors = [ImproperUniform(-2,2), ImproperUniform(-2,2),
+                                        ImproperUniform(0,None)]
     param_names = ["P0", "P1", "std_dev"]
+    params_dict = dict(zip(param_names, [dist.rvs(num_particles) for dist in \
+                                                        cust_priors])) 
+    proposal = [params_dict, np.ones(num_particles)/num_particles]
     noise = None
     log_like_args = [(training_data.x.shape[0]), noise] 
     log_like_func = ImplicitLikelihood
@@ -80,7 +86,8 @@ def run_SMC(ind, training_data):
     step_list, marginal_log_likes = \
         smc.sample(num_particles, mcmc_steps,
                    ess_threshold,
-                   required_phi=1/np.sqrt(training_data.x.shape[0]))
+                   required_phi=1/np.sqrt(training_data.x.shape[0]),
+                   proposal=proposal)
     print(step_list[-1].compute_mean())
     print(step_list[-1].compute_std_dev())
 

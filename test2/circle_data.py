@@ -1,15 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-N = 1000
+N = 20
+std = 0.05
 
 theta = np.linspace(0, 2*np.pi, N)
-x = np.cos(theta)
-y = np.sin(theta)
-for i in range(theta.shape[0]):
-	x[i] += np.random.normal(0, 0.1)
-for i in range(theta.shape[0]):
-	y[i] += np.random.normal(0, 0.1)
+x = np.cos(theta) + np.random.normal(0, std, size=theta.shape)
+y = np.sin(theta) + np.random.normal(0, std, size=theta.shape)
 
 data_x = np.zeros((N, 2))
 data_x[:,0] = x 

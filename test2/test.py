@@ -39,10 +39,6 @@ for j in range(0,50):
     print(str(eqn_act))
     fit_base = fitcheck_base.evaluate_fitness_vector(eqn_act)
     mean_const = np.mean(eqn_act.evaluate_equation_at(data))
-    y_data = np.ones(86)
-    print(np.mean(np.abs(fit_base)))
-    import pdb;pdb.set_trace()
-mean_const = np.mean(eqn_act.evaluate_equation_at(data))
 import pdb;pdb.set_trace()
 y_data = np.ones(86)*mean_const
 nmll = fbf.__call__(eqn_act)
