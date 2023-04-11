@@ -113,8 +113,9 @@ def run_SMC(ind, training_data, prop_dists):
     print(len(marginal_log_likes))
     nmll = -1 * (marginal_log_likes[-1] - 
                  marginal_log_likes[smc.req_phi_index[0]])
+    import pdb;pdb.set_trace()
     print(f"-NMLL = {nmll}")
-    print(f"final estimate = {marginal_log_likes[-1]}")
+    print(f"final estimate = {-1 * marginal_log_likes[-1]}")
     
     inputs_1 = step_list[0].params.mean(axis=0).reshape((1,-1))
     inputs_2 = step_list[-1].params.mean(axis=0).reshape((1,-1))
