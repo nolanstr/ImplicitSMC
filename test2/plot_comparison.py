@@ -56,7 +56,7 @@ for j in range(0,50):
 params = [SL_params, MLE_params]
 fig, axs = plt.subplots(2)
 labels = [r"$\theta_{1}$", r"$\theta_{2}$"]
-titles = ["Schmidt-Lipson Implicit Regression",
+titles = ["Bingo Implicit Regression",
           "Maximum Likelihood Estimation Regression"]
 
 for i, ax in enumerate(axs):
@@ -68,6 +68,7 @@ for i, ax in enumerate(axs):
     ax.set_xlabel(r"$\theta$")
     ax.set_ylabel("Density")
     ax.legend()
+plt.savefig("parameter_estimations", dpi=1000)
 plt.show()
 import pdb;pdb.set_trace()
 
