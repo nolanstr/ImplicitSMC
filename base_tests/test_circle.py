@@ -32,7 +32,7 @@ def run_SMC(model):
     ibff = IBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, implicit_data, MLEclo,
                                     ensemble=10)
     import pdb;pdb.set_trace()
-    step_list, fit = ibff(model, return_nmll_only=True)
+    fit, marginal_log_likes, step_list = ibff(model, return_nmll_only=False)
     print(f"-NMLL = {fit}")
     print(str(model))
     import pdb;pdb.set_trace()

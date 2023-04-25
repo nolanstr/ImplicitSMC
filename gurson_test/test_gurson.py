@@ -11,8 +11,6 @@ from bingo.symbolic_regression.implicit_regression import ImplicitRegression, \
 from bingo.symbolic_regression.bayes_fitness.implicit_bayes_fitness_function \
                                     import ImplicitBayesFitnessFunction as IBFF
 
-
-
 def get_sympy_subplots(plot:Plot):
     backend = MatplotlibBackend(plot)
 
@@ -36,6 +34,7 @@ def run_SMC(model):
     optimizer = ScipyOptimizer(fitness, method='BFGS', 
                     param_init_bounds=[-1.,1.], options={'maxiter':1000})
     MLEclo = LocalOptFitnessFunction(fitness, optimizer)
+    import pdb;pdb.set_trace()
     ibff = IBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, implicit_data, MLEclo,
                                     ensemble=10)
     fit, marginal_log_likes, step_list = ibff(model, return_nmll_only=False)
