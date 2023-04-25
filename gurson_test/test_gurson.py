@@ -47,7 +47,6 @@ if __name__ == "__main__":
     #[Sp, Sq, VVf]
     #[sigma_h, sigma_vm, f]
     string = "(X_1**2) + (2 * X_2 * cosh(C_0*X_0)) - 1 - (X_2**2)" 
-    x, y, z = symbols('X_0 X_1 X_2')
     shape = AGraph(equation=string)
     str(shape)
     run_SMC(shape)
