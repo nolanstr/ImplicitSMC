@@ -1,0 +1,51 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sympy import plot_implicit, symbols, Eq, And, sympify, simplify, nsimplify
+from sympy.plotting.plot import MatplotlibBackend, Plot
+
+from bingo.symbolic_regression.agraph.agraph import AGraph
+from bingo.local_optimizers.scipy_optimizer import ScipyOptimizer
+from bingo.local_optimizers.local_opt_fitness import LocalOptFitnessFunction
+from bingo.symbolic_regression.implicit_regression import ImplicitRegression, \
+                                            ImplicitTrainingData, MLERegression
+from bingo.symbolic_regression.bayes_fitness.mv_implicit_bayes_fitness_function \
+                                import MVImplicitBayesFitnessFunction as IBFF
+
+def get_sympy_subplots(plot:Plot):
+    backend = MatplotlibBackend(plot)
+
+    backend.process_series()
+    backend.fig.tight_layout()
+    return backend.plt
+
+PARTICLES = 100
+MCMC_STEPS = 10
+ESS_THRESHOLD = 0.75
+data = np.load("noisy_gurson_data.npy")
+
+def run_SMC(model):
+    
+    num_particles = 200
+    mcmc_steps = 50
+    ess_threshold = 0.75
+
+    implicit_data = ImplicitTrainingData(data)
+    fitness = MLERegression(implicit_data)
+    optimizer = ScipyOptimizer(fitness, method='BFGS', 
+                    param_init_bounds=[-1.,1.], options={'maxiter':1000})
+    MLEclo = LocalOptFitnessFunction(fitness, optimizer)
+    ibff = IBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, implicit_data, MLEclo,
+                                    ensemble=10)
+    fit, marginal_log_likes, step_list = ibff(model, return_nmll_only=False)
+    print(f"-NMLL = {fit}")
+    print(str(model))
+    import pdb;pdb.set_trace()
+    
+if __name__ == "__main__":
+    #[Sp, Sq, VVf]
+    #[sigma_h, sigma_vm, f]
+    string = "(X_0)(X_0) + (2)(X_2) - ((X_1 + cosh(X_1))^(32862.304295))" 
+    shape = AGraph(equation=string)
+    str(shape)
+    print(shape.get_complexity())
+    run_SMC(shape)

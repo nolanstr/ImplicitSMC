@@ -24,7 +24,7 @@ from bingo.symbolic_regression.bayes_fitness.implicit_bayes_fitness_function \
                                     import ImplicitBayesFitnessFunction as IBFF
 
 POP_SIZE = 104
-STACK_SIZE = 32
+STACK_SIZE = 24
 MAX_GEN = 1000
 FIT_THRESH = -np.inf
 CHECK_FREQ = 10
@@ -63,7 +63,7 @@ def run_implicit_gpsruq():
     pareto_front = ParetoFront(secondary_key = lambda ag: ag.get_complexity(), 
                             similarity_function=agraph_similarity)
 
-    evaluator = Evaluation(ibff, redundant=True, multiprocess=32)
+    evaluator = Evaluation(ibff, redundant=False, multiprocess=32)
 
     selection_phase=BayesCrowding()
     ea = GeneralizedCrowdingEA(evaluator, crossover,

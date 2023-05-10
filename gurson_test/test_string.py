@@ -46,8 +46,7 @@ def run_SMC(model):
 if __name__ == "__main__":
     #[Sp, Sq, VVf]
     #[sigma_h, sigma_vm, f]
-    string = "(((X_2)(X_2))((X_2)(X_2)))(((X_2)(X_2))((X_2)(X_2)))" 
-    x, y, z = symbols('X_0 X_1 X_2')
+    string = "(X_0)(X_0) + (2)(X_2) - ((X_1 + cosh(X_1))^(32862.304295))" 
     shape = AGraph(equation=string)
     str(shape)
     run_SMC(shape)
