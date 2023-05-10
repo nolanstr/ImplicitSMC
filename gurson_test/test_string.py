@@ -36,6 +36,7 @@ def run_SMC(model):
     optimizer = ScipyOptimizer(fitness, method='BFGS', 
                     param_init_bounds=[-1.,1.], options={'maxiter':1000})
     MLEclo = LocalOptFitnessFunction(fitness, optimizer)
+    import pdb;pdb.set_trace()
     ibff = IBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, implicit_data, MLEclo,
                                     ensemble=10)
     fit, marginal_log_likes, step_list = ibff(model, return_nmll_only=False)
@@ -46,7 +47,7 @@ def run_SMC(model):
 if __name__ == "__main__":
     #[Sp, Sq, VVf]
     #[sigma_h, sigma_vm, f]
-    string = "(((X_2)(X_2))((X_2)(X_2)))(((X_2)(X_2))((X_2)(X_2)))" 
+    string = "(((X_0)(X_0))((X_0)(X_0)))(((X_1)^(-2))(((2622596789441247334712495781176407998012381108314610575786131688223421131004159971033088.000000 + X_2)(2622596789441247334712495781176407998012381108314610575786131688223421131004159971033088.000000 + X_2))^((-4)(X_2))))" 
     x, y, z = symbols('X_0 X_1 X_2')
     shape = AGraph(equation=string)
     str(shape)

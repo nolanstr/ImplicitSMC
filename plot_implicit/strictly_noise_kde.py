@@ -27,6 +27,7 @@ def get_sympy_subplots(plot:Plot):
 PARTICLES = 100
 MCMC_STEPS = 10
 ESS_THRESHOLD = 0.75
+h, k = 1, 1
 data = np.load("noisycircledata.npy")
 
 def run_SMC(model):
@@ -43,7 +44,7 @@ def run_SMC(model):
     MLEclo = LocalOptFitnessFunction(fitness, optimizer)
     ibff = IBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, implicit_data, MLEclo,
                                     ensemble=10)
-    step_list, fit = ibff(model, return_nmll_only=True)
+    fit, marginal_log_likes, step_list = ibff(model, return_nmll_only=False)
     print(f"-NMLL = {fit}")
     print(str(model))
     means = list(step_list[-1].compute_mean().values())
@@ -69,6 +70,6 @@ def run_SMC(model):
 
 if __name__ == "__main__":
     
-    shape = AGraph(equation= "((X_0 - 0) ** 2) + ((X_1 - 0) ** 2) - 1")
+    shape = AGraph(equation=f"((X_0 - {h}) ** 2) + ((X_1 - {k}) ** 2) - 1")
     str(shape)
     run_SMC(shape)

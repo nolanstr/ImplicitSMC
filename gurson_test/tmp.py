@@ -27,7 +27,7 @@ def plot_implicit(fn, _X, _Y, _Z):
     shape = grid_X.shape
 
     grid_X, grid_Y, grid_Z = grid_X.flatten(), grid_Y.flatten(), grid_Z.flatten()
-    string = "(-0.095137 + X_2)((X_2)^(-2) + X_2)" 
+    string = "((X_2)(X_2))((X_2 + ((cosh((X_2)(X_2)))^(236.26171198176314))((-12.04291655743545 + cosh((X_2)(X_2)))^(-8.22434266598209)))^(45.363526620848326))" 
     model = AGraph(equation=string)
     x,y,z = sympy.symbols("X_0 X_1 X_2")
     string = model.get_formatted_string(format_="sympy")

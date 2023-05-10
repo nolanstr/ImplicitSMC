@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 from scipy.stats import norm
 import sympy
 from sympy import plot_implicit, symbols, Eq, And, sympify, simplify, nsimplify
@@ -23,10 +24,11 @@ def get_sympy_subplots(plot:Plot):
     backend.fig.tight_layout()
     return backend.plt
 
-PARTICLES = 200
+PARTICLES = 100
 MCMC_STEPS = 10
 ESS_THRESHOLD = 0.75
-data = np.load("noisycircledata.npy")
+h, k = 1, 1
+data = np.load("noisy_gurson_data.npy")
 
 def run_SMC(model):
     
@@ -47,22 +49,30 @@ def run_SMC(model):
     print(str(model))
     means = list(step_list[-1].compute_mean().values())
     stds = list(step_list[-1].compute_std_dev().values())
-    fig, axs = plt.subplots(nrows=3,ncols=1)
-    labels = [r"$P_{1}$", r"$P_{2}$", r"$\sigma$"]
-    true_val = [1, 1, 0.1]
+    labels = [r"$c_{0}$", r"$\sigma$"]
+    fig, axs = plt.subplots(nrows=len(labels),ncols=1)
+    true_val = [1.5, 0.01]
+
     for i, (mean, std) in enumerate(zip(means, stds)):
         x = np.linspace(mean-3*std, mean+3*std, 1000)
         y = norm(loc=mean, scale=std).pdf(x)
-        axs[i].fill_between(x, y, alpha=0.3)
+        sns.kdeplot(x=abs(step_list[-1].params[:,i]),
+                    weights=step_list[-1].weights.flatten(),
+                    fill=True,alpha=0.5, ax=axs[i], palette="crest",
+                    label=labels[i])
         axs[i].axvline(true_val[i], color='k', linestyle='--')
-    axs[1].set_ylabel(r"Density")
-    axs[2].set_xlabel(r"$\theta$")
+        axs[i].set_ylabel(r"Density")
+        axs[i].legend(loc="upper right")
+    axs[-1].set_xlabel(r"$\theta$")
+    plt.tight_layout()
+    plt.savefig("all_parameters_gurson", dpi=1000)
     plt.show()
     import pdb;pdb.set_trace()
 
 
 if __name__ == "__main__":
     
-    shape = AGraph(equation= "((X_0 - 1.0) ** 2) + ((X_1 - 1.0) ** 2) - 1")
+    string = "(X_1**2) + (2 * X_2 * cosh(1.5*X_0)) - 1 - (X_2**2)" 
+    shape = AGraph(equation=string)
     str(shape)
     run_SMC(shape)

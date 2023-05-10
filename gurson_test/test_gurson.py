@@ -18,7 +18,7 @@ def get_sympy_subplots(plot:Plot):
     backend.fig.tight_layout()
     return backend.plt
 
-PARTICLES = 100
+PARTICLES = 200
 MCMC_STEPS = 10
 ESS_THRESHOLD = 0.75
 data = np.load("noisy_gurson_data.npy")

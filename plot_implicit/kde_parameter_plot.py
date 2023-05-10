@@ -27,6 +27,7 @@ def get_sympy_subplots(plot:Plot):
 PARTICLES = 100
 MCMC_STEPS = 10
 ESS_THRESHOLD = 0.75
+h, k = 1, 1
 data = np.load("noisycircledata.npy")
 
 def run_SMC(model):
@@ -43,14 +44,14 @@ def run_SMC(model):
     MLEclo = LocalOptFitnessFunction(fitness, optimizer)
     ibff = IBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, implicit_data, MLEclo,
                                     ensemble=10)
-    step_list, fit = ibff(model, return_nmll_only=True)
+    fit, marginal_log_likes, step_list = ibff(model, return_nmll_only=False)
     print(f"-NMLL = {fit}")
     print(str(model))
     means = list(step_list[-1].compute_mean().values())
     stds = list(step_list[-1].compute_std_dev().values())
     fig, axs = plt.subplots(nrows=4,ncols=1)
-    labels = [r"$P_{1}$", r"$P_{2}$", r"$P_{3}$", r"$\sigma$"]
-    true_val = [0, 0, 1, 0.1]
+    labels = [r"$c_{0}$", r"$c_{1}$", r"$c_{2}$", r"$\sigma$"]
+    true_val = [h, k, 1, 0.1]
     for i, (mean, std) in enumerate(zip(means, stds)):
         x = np.linspace(mean-3*std, mean+3*std, 1000)
         y = norm(loc=mean, scale=std).pdf(x)
@@ -70,6 +71,7 @@ def run_SMC(model):
 
 if __name__ == "__main__":
     
-    shape = AGraph(equation= "((X_0 - 1.0) ** 2) + ((X_1 - 1.0) ** 2) - 1.0")
+    shape = AGraph(equation= "((X_0 - C_0) ** 2) + ((X_1 - C_1) ** 2) - C_2")
+    shape = AGraph(equation= "(X_0 - C_0)^2 + (X_1 - C_1)^2 - C_2")
     str(shape)
     run_SMC(shape)
