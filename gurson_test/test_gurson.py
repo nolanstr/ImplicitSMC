@@ -21,7 +21,7 @@ def get_sympy_subplots(plot:Plot):
 PARTICLES = 200
 MCMC_STEPS = 10
 ESS_THRESHOLD = 0.75
-data = np.load("noisy_gurson_data.npy")
+data = np.load("../gurson_test/noisy_gurson_data.npy")
 
 def run_SMC(model):
     
@@ -34,7 +34,6 @@ def run_SMC(model):
     optimizer = ScipyOptimizer(fitness, method='BFGS', 
                     param_init_bounds=[-1.,1.], options={'maxiter':1000})
     MLEclo = LocalOptFitnessFunction(fitness, optimizer)
-    import pdb;pdb.set_trace()
     ibff = IBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, implicit_data, MLEclo,
                                     ensemble=10)
     fit, marginal_log_likes, step_list = ibff(model, return_nmll_only=False)
@@ -48,4 +47,5 @@ if __name__ == "__main__":
     string = "(X_1**2) + (2 * X_2 * cosh(C_0*X_0)) - 1 - (X_2**2)" 
     shape = AGraph(equation=string)
     str(shape)
+    print(shape.get_complexity())
     run_SMC(shape)

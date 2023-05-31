@@ -115,3 +115,14 @@ if __name__ == "__main__":
 
         print(str(ind))
         print(f"-NMLL: {ind.fitness}")
+
+        c=0
+        if "X_0" in str(ind):
+            c += 1
+        if "X_1" in str(ind):
+            c += 1
+        if "X_2" in str(ind):
+            c += 1
+        if c == 3:
+            import pdb;pdb.set_trace()
+        print(f"features in equation = {c}")

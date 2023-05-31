@@ -5,8 +5,8 @@ N = 100
 std = 0.1
 
 theta = np.linspace(0, 2*np.pi, N)
-x = np.cos(theta) + np.random.normal(0, std, size=theta.shape)
-y = np.sin(theta) + np.random.normal(0, std, size=theta.shape)
+x = np.cos(theta) + np.random.normal(0, std, size=theta.shape) + 1
+y = np.sin(theta) + np.random.normal(0, std, size=theta.shape) + 1
 
 data_x = np.zeros((N, 2))
 data_x[:,0] = x 
