@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from sympy import plot_implicit, symbols, Eq, And, sympify, simplify, nsimplify
 from sympy.plotting.plot import MatplotlibBackend, Plot
 
-from bingo.symbolic_regression.agraph.agraph import AGraph
+from bingo.symbolic_regression.agraph.pytorch_agraph import PytorchAGraph
 from bingo.local_optimizers.scipy_optimizer import ScipyOptimizer
 from bingo.local_optimizers.local_opt_fitness import LocalOptFitnessFunction
 from bingo.symbolic_regression.implicit_regression import ImplicitRegression, \
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     #[Sp, Sq, VVf]
     #[sigma_h, sigma_vm, f]
     string = "(X_1**2) + (2 * X_2 * cosh(C_0*X_0)) - 1 - (X_2**2)" 
-    shape = AGraph(equation=string)
+    shape = PytorchAGraph(equation=string)
     str(shape)
     print(shape.get_complexity())
     run_SMC(shape)
