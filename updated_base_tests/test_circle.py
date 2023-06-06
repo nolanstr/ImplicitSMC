@@ -2,7 +2,7 @@ import h5py
 import numpy as np
 import matplotlib.pyplot as plt
 
-from bingo.symbolic_regression.agraph.pytorch_agraph import PytorchAGraph
+from bingo.symbolic_regression.agraph.agraph import AGraph
 
 from bingo.local_optimizers.scipy_optimizer import ScipyOptimizer
 from bingo.local_optimizers.local_opt_fitness import LocalOptFitnessFunction
@@ -11,8 +11,8 @@ from bingo.symbolic_regression.implicit_regression import ImplicitRegression, \
 from bingo.symbolic_regression.bayes_fitness.alter_implicit_bff \
                                     import ImplicitBayesFitnessFunction as IBFF
 
-
-PARTICLES = 10
+np.random.seed(42)
+PARTICLES = 5
 MCMC_STEPS = 5
 ESS_THRESHOLD = 0.75
 
@@ -33,7 +33,7 @@ def run_SMC(model):
     num_particles = 200
     mcmc_steps = 50
     ess_threshold = 0.75
-    data = make_random_data(20, 0.1)
+    data = make_random_data(10, 0.1)
 
     implicit_data = ImplicitTrainingData(data, np.empty_like(data))
     fitness = MLERegression(implicit_data)
@@ -50,7 +50,7 @@ def run_SMC(model):
 
 if __name__ == "__main__":
     
-    circle = PytorchAGraph(equation="((X_0 - 1.0) ** 2) + ((X_1 - 1.0) ** 2) - 1.0")
+    circle = AGraph(equation="((X_0 - 1.0) ** 2) + ((X_1 - 1.0) ** 2) - 1.0")
     str(circle)
     run_SMC(circle)
 
