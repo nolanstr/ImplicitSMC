@@ -33,7 +33,7 @@ def run_SMC(model):
     num_particles = 200
     mcmc_steps = 50
     ess_threshold = 0.75
-    data = make_random_data(20, 0.1)
+    data = make_random_data(20, 0.2)
 
     implicit_data = ImplicitTrainingData(data, np.empty_like(data))
     fitness = MLERegression(implicit_data)

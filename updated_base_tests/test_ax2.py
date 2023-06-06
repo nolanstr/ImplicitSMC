@@ -2,7 +2,7 @@ import h5py
 import numpy as np
 import matplotlib.pyplot as plt
 
-from bingo.symbolic_regression.agraph.agraph import AGraph
+from bingo.symbolic_regression.agraph.pytorch_agraph import PytorchAGraph
 from bingo.local_optimizers.scipy_optimizer import ScipyOptimizer
 from bingo.local_optimizers.local_opt_fitness import LocalOptFitnessFunction
 from bingo.symbolic_regression.implicit_regression import ImplicitRegression, \
@@ -50,7 +50,7 @@ def run_SMC(model):
 
 if __name__ == "__main__":
     
-    circle = AGraph(equation="1.0 * X_0^2")
+    circle = PytorchAGraph(equation="1.0 * X_0^2")
     str(circle)
     run_SMC(circle)
 

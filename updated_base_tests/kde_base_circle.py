@@ -15,7 +15,6 @@ from bingo.symbolic_regression.bayes_fitness.alter_implicit_bff \
                                     import ImplicitBayesFitnessFunction as IBFF
 
 
-
 def make_random_data(N, std, h=0, k=0):
 
     theta = np.linspace(0, 2*np.pi, N)
@@ -28,12 +27,13 @@ def make_random_data(N, std, h=0, k=0):
 
     return data_x
 
+
+
 PARTICLES = 100
 MCMC_STEPS = 10
 ESS_THRESHOLD = 0.75
 h, k = 1, 1
 TRUE_STD_DEV = 0.10
-
 
 def run_SMC(model):
     
@@ -43,7 +43,7 @@ def run_SMC(model):
     data = make_random_data(1000, TRUE_STD_DEV, h=h, k=k)
 
 
-    implicit_data = ImplicitTrainingData(data,  np.empty_like(data))
+    implicit_data = ImplicitTrainingData(data, np.empty_like(data))
     fitness = MLERegression(implicit_data)
     optimizer = ScipyOptimizer(fitness, method='BFGS', 
                     param_init_bounds=[-1.,1.], options={'maxiter':1000})
@@ -53,30 +53,30 @@ def run_SMC(model):
     fit, marginal_log_likes, step_list = ibff(model, return_nmll_only=False)
     print(f"-NMLL = {fit}")
     print(str(model))
-    means = list(step_list[-1].compute_mean().values())
-    stds = list(step_list[-1].compute_std_dev().values())
-    fig, axs = plt.subplots(nrows=4,ncols=1)
-    labels = [r"$c_{0}$", r"$c_{1}$", r"$c_{2}$", r"$\sigma$"]
-    true_val = [h, k, 1, 0.1]
-    for i, (mean, std) in enumerate(zip(means, stds)):
-        x = np.linspace(mean-3*std, mean+3*std, 1000)
-        y = norm(loc=mean, scale=std).pdf(x)
-        sns.kdeplot(x=abs(step_list[-1].params[:,i]),
-                    weights=step_list[-1].weights.flatten(),
-                    fill=True,alpha=0.5, ax=axs[i], palette="crest",
-                    label=labels[i])
-        axs[i].axvline(true_val[i], color='k', linestyle='--')
-        axs[i].set_ylabel(r"Density")
-        axs[i].legend(loc="upper right")
-    axs[3].set_xlabel(r"$\theta$")
+    print(step_list[-1].compute_mean())
+    mean = list(step_list[-1].compute_mean().values())[0]
+    std = list(step_list[-1].compute_std_dev().values())[0]
+    fig, ax = plt.subplots()
+    labels = [r"$\sigma$"]
+    true_val = [TRUE_STD_DEV]
+    x = np.linspace(mean-3*std, mean+3*std, 1000)
+    y = norm(loc=mean, scale=std).pdf(x)
+    sns.kdeplot(x=abs(step_list[-1].params[:,0]),
+                weights=step_list[-1].weights.flatten(),
+                fill=True,alpha=0.5, ax=ax, palette="crest",
+                label=labels[0])
+    ax.axvline(true_val[0], color='k', linestyle='--')
+    ax.set_ylabel(r"Density")
+    ax.legend(loc="upper right")
+    ax.set_xlabel(r"$\theta$")
     plt.tight_layout()
-    plt.savefig("all_parameters_circle", dpi=1000)
+    plt.savefig("base_parameters_circle", dpi=1000)
     plt.show()
     import pdb;pdb.set_trace()
 
 
 if __name__ == "__main__":
     
-    shape = PytorchAGraph(equation= "(X_0 - C_0)^2 + (X_1 - C_1)^2 - C_2")
+    shape = PytorchAGraph(equation= "(X_0 - 1)^2 + (X_1 - 1)^2 - 1")
     str(shape)
     run_SMC(shape)
