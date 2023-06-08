@@ -2,17 +2,16 @@ import h5py
 import numpy as np
 import matplotlib.pyplot as plt
 
-from bingo.symbolic_regression.agraph.agraph import AGraph
+from bingo.symbolic_regression.agraph.pytorch_agraph import PytorchAGraph
 
 from bingo.local_optimizers.scipy_optimizer import ScipyOptimizer
 from bingo.local_optimizers.local_opt_fitness import LocalOptFitnessFunction
 from bingo.symbolic_regression.implicit_regression import ImplicitRegression, \
                                             ImplicitTrainingData, MLERegression
-from bingo.symbolic_regression.bayes_fitness.alter_implicit_bff \
+from bingo.symbolic_regression.bayes_fitness.implicit_bayes_fitness_function \
                                     import ImplicitBayesFitnessFunction as IBFF
 
-np.random.seed(42)
-PARTICLES = 10
+PARTICLES = 100
 MCMC_STEPS = 5
 ESS_THRESHOLD = 0.75
 
@@ -25,19 +24,12 @@ def make_random_data(N, std, h=0, k=0):
     data_x = np.zeros((N, 2))
     data_x[:,0] = x + h 
     data_x[:,1] = y + k
-    print(data_x)
+
     return data_x
 
 def run_SMC(model):
     
-    num_particles = 200
-    mcmc_steps = 50
-    ess_threshold = 0.75
-<<<<<<< HEAD
-    data = make_random_data(20, 0.2)
-=======
     data = make_random_data(200, 0.1)
->>>>>>> 8b445a52c18efda9cff30ebdb0250aa5774c5d25
 
     implicit_data = ImplicitTrainingData(data, np.empty_like(data))
     fitness = MLERegression(implicit_data)
@@ -54,7 +46,7 @@ def run_SMC(model):
 
 if __name__ == "__main__":
     
-    circle = AGraph(equation="((X_0 - 0) ** 2) + ((X_1 - 0) ** 2) - 1")
+    circle = PytorchAGraph(equation="((X_0 - 0) ** 2) + ((X_1 - 0) ** 2) - 1")
     str(circle)
     run_SMC(circle)
 
