@@ -11,7 +11,7 @@ from bingo.local_optimizers.scipy_optimizer import ScipyOptimizer
 from bingo.local_optimizers.local_opt_fitness import LocalOptFitnessFunction
 from bingo.symbolic_regression.implicit_regression import ImplicitRegression, \
                                             ImplicitTrainingData, MLERegression
-from bingo.symbolic_regression.bayes_fitness.alter_implicit_bff \
+from bingo.symbolic_regression.bayes_fitness.implicit_bayes_fitness_function \
                                     import ImplicitBayesFitnessFunction as IBFF
 
 
