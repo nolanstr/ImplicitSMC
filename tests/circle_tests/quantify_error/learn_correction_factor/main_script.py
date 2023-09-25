@@ -58,7 +58,7 @@ def execute_generational_steps():
     pareto_front = ParetoFront(secondary_key = lambda ag: ag.get_complexity(), 
                             similarity_function=agraph_similarity)
 
-    evaluator = Evaluation(clo)
+    evaluator = Evaluation(clo, redundant=True, multiprocess=52)
 
     selection_phase = DeterministicCrowding()
     ea = GeneralizedCrowdingEA(evaluator, crossover,

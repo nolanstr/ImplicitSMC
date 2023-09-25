@@ -34,7 +34,7 @@ ESS_THRESHOLD = 0.75
 
 def execute_generational_steps():
 
-    data = np.load("../../../data/circle_data/noisycircledata_01.npy")
+    data = np.load("../../../data/circle_data/noisycircledata_01.npy")[:,:2]
     implicit_data = ImplicitTrainingData(data, np.empty_like(data))
 
     component_generator = ComponentGenerator(implicit_data.x.shape[1])
@@ -54,7 +54,7 @@ def execute_generational_steps():
     ibff = IBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, 
             implicit_data, MLEclo, ensemble=5)
 
-    evaluator = Evaluation(ibff, multiprocess=10)
+    evaluator = Evaluation(ibff, redundant=True, multiprocess=4)
 
     selection_phase=BayesCrowding()
     ea = GeneralizedCrowdingEA(evaluator, crossover,
