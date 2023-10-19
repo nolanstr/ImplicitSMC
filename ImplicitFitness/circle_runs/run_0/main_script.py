@@ -45,7 +45,6 @@ def execute_generational_steps():
     crossover = AGraphCrossover()
     mutation = AGraphMutation(component_generator)
     agraph_generator = AGraphGenerator(STACK_SIZE, component_generator,
-                                       use_simplification=True, 
                                        use_pytorch=True)
     fitness = MLERegression(implicit_data)
     optimizer = ScipyOptimizer(fitness, method='BFGS', 
