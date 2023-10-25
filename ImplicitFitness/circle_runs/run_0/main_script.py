@@ -21,16 +21,16 @@ from bingo.symbolic_regression.implicit_regression import ImplicitRegression, \
 from bingo.symbolic_regression.bayes_fitness.implicit_bayes_fitness_function \
                     import ImplicitBayesFitnessFunction as IBFF
 
-POP_SIZE = 400
+POP_SIZE = 100
 STACK_SIZE = 40
 MAX_GEN = 10000
 FIT_THRESH = -np.inf
 CHECK_FREQ = 50
 MIN_GEN = 500
 
-PARTICLES = 50
-MCMC_STEPS = 7
-ESS_THRESHOLD = 0.75
+PARTICLES = 30
+MCMC_STEPS = 5
+ESS_THRESHOLD = 0.7
 
 def execute_generational_steps():
 
@@ -48,12 +48,12 @@ def execute_generational_steps():
                                        use_pytorch=True)
     fitness = MLERegression(implicit_data)
     optimizer = ScipyOptimizer(fitness, method='BFGS', 
-                    param_init_bounds=[-1.,1.], options={'maxiter':1000})
+                    param_init_bounds=[-1.,1.], options={'maxiter':500})
     MLEclo = LocalOptFitnessFunction(fitness, optimizer)
     ibff = IBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, 
-            implicit_data, MLEclo, ensemble=5)
+            implicit_data, MLEclo, ensemble=1)
 
-    evaluator = Evaluation(ibff, redundant=False, multiprocess=4)
+    evaluator = Evaluation(ibff, redundant=False, multiprocess=20)
 
     selection_phase=BayesCrowding()
     ea = GeneralizedCrowdingEA(evaluator, crossover,

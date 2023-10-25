@@ -3,7 +3,7 @@
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=u1079968@umail.utah.edu
 #SBATCH --nodes=1
-#SBATCH --ntasks=10
+#SBATCH --ntasks=20
 # additional information for allocated clusters
 #SBATCH --account=hochhalter-np     # account - abbreviated by -A
 #SBATCH --partition=hochhalter-shared-np # partition, abbreviated by -p
