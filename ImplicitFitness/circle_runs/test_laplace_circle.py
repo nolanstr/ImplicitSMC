@@ -11,11 +11,13 @@ from bingo.symbolic_regression.implicit_regression import ImplicitRegression, \
                                             ImplicitTrainingData, MLERegression
 from bingo.symbolic_regression.bayes_fitness.implicit_bayes_fitness_function \
                     import ImplicitBayesFitnessFunction as IBFF
+from bingo.symbolic_regression.bayes_fitness.implicit_bff_laplace \
+                    import ImplicitLaplaceBayesFitnessFunction as ILBFF
 from bingo.symbolic_regression.agraph.pytorch_agraph import PytorchAGraph
                     
 
-PARTICLES = 20
-MCMC_STEPS = 5
+PARTICLES = 30
+MCMC_STEPS = 7
 ESS_THRESHOLD = 0.7
 
 def test_true_model():
@@ -24,20 +26,23 @@ def test_true_model():
                    "005", 
                    "007", 
                    "01"]
-    noise_levels = ["01"]
+    #noise_levels = ["01"]
     for i, noise_level in enumerate(noise_levels):
 
 
         data = np.load(
                 f"../../data/circle_data/noisycircledata_{noise_level}.npy")[:,:2]
-        print(data.shape)
         implicit_data = ImplicitTrainingData(data, np.empty_like(data))
         fitness = MLERegression(implicit_data, order="second")
         optimizer = ScipyOptimizer(fitness, method='BFGS', 
                         param_init_bounds=[-1.,1.], options={'maxiter':500})
         MLEclo = LocalOptFitnessFunction(fitness, optimizer)
+        
         ibff = IBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, 
                 implicit_data, MLEclo, ensemble=1)
+        ilbff = ILBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, 
+                implicit_data, MLEclo)
+
         print(f"Noise Level: {noise_level}")
         model = PytorchAGraph(
                 equation="(X_0 - 0.0)^2 + (X_1 - 0.0)^2 - (0.0)^2")
@@ -47,9 +52,14 @@ def test_true_model():
         model = PytorchAGraph(
                 equation="(X_0 - 0.0)^2 + (X_1 - 0.0)^2 - (0.0)^2")
         stime = time.time()
-        print(f"-NMLL from iSMC: {ibff(model)}")
+        print(f"\n-NMLL from iSMC: {ibff(model)}")
         print(f"iSMC Computation Time = {time.time()-stime}")
          
+        model = PytorchAGraph(
+                equation="(X_0 - 0.0)^2 + (X_1 - 0.0)^2 - (0.0)^2")
+        stime = time.time()
+        print(f"\n-NMLL from iSMC(Laplace Approximation): {ilbff(model)}")
+        print(f"iSMC(Laplace Approximation) Computation Time = {time.time()-stime}\n")
 
 
 if __name__ == '__main__':

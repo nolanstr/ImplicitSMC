@@ -40,7 +40,7 @@ def run_SMC(model):
     num_particles = 200
     mcmc_steps = 50
     ess_threshold = 0.75
-    data = make_random_data(1000, TRUE_STD_DEV, h=h, k=k)
+    data = make_random_data(100, TRUE_STD_DEV, h=h, k=k)
 
 
     implicit_data = ImplicitTrainingData(data,  np.empty_like(data))

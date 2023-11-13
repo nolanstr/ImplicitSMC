@@ -31,26 +31,16 @@ def test_true_model():
         data = np.load(
                 f"../../data/circle_data/noisycircledata_{noise_level}.npy")[:,:2]
         print(data.shape)
-        implicit_data = ImplicitTrainingData(data, np.empty_like(data))
-        fitness = MLERegression(implicit_data, order="second")
-        optimizer = ScipyOptimizer(fitness, method='BFGS', 
-                        param_init_bounds=[-1.,1.], options={'maxiter':500})
-        MLEclo = LocalOptFitnessFunction(fitness, optimizer)
-        ibff = IBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, 
-                implicit_data, MLEclo, ensemble=1)
-        print(f"Noise Level: {noise_level}")
         model = PytorchAGraph(
                 equation="(X_0 - 0.0)^2 + (X_1 - 0.0)^2 - (0.0)^2")
-        print(f"SSQE from MLE Regression: {MLEclo(model)}")
-
-        print(f"Model w/ MLE Parameters: {str(model)}")
-        model = PytorchAGraph(
-                equation="(X_0 - 0.0)^2 + (X_1 - 0.0)^2 - (0.0)^2")
-        stime = time.time()
-        print(f"-NMLL from iSMC: {ibff(model)}")
-        print(f"iSMC Computation Time = {time.time()-stime}")
-         
-
+        params = np.random.normal(0, 1, size=(100,3))
+        model.set_local_optimization_params(params.T)
+        model._simplified_constants = params.T
+        _f = model.evaluate_equation_at(data)
+        df_dx1 = model.evaluate_equation_with_x_partial_at(data, [0] * 2)
+        df_dx2 = model.evaluate_equation_with_x_partial_at(data, [1] * 2)
+    
+        import pdb;pdb.set_trace()
 
 if __name__ == '__main__':
     test_true_model()

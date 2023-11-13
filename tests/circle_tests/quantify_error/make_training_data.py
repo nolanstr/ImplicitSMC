@@ -37,9 +37,10 @@ def estimate_ssqe(model, radius, N):
 if __name__ == "__main__":
     
     circle = PytorchAGraph(equation="((X_0 - 0) ** 2) + ((X_1 - 0) ** 2) - 1")
-    min_radius, max_radius, h = 1., 4.0, 0.01
+    min_radius, max_radius, h = .8, 1.2, 0.1
     Ns = np.array([5, 10, 20, 50, 100, 200, 500, 1000])
     radii = np.arange(min_radius, max_radius+h, h)
+    print(radii)
     data = np.zeros((radii.shape[0]*Ns.shape[0], 3))
     count = 0
 
@@ -50,3 +51,5 @@ if __name__ == "__main__":
             data[count,:] = [N, approx_ssqe, true_ssqe]
             count += 1
     np.save("N_approx_true_data", data)
+    plt.savefig("imputed_data", dpi=300)
+    plt.show()

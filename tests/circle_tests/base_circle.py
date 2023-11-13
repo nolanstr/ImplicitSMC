@@ -29,7 +29,7 @@ def make_random_data(N, std, h=0, k=0):
 
 def run_SMC(model):
     
-    data = make_random_data(200, 0.1)
+    data = make_random_data(50, 0.1)
 
     implicit_data = ImplicitTrainingData(data, np.empty_like(data))
     fitness = MLERegression(implicit_data)
