@@ -42,11 +42,10 @@ def test_true_model():
                 implicit_data, MLEclo, ensemble=1)
         ilbff = ILBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, 
                 implicit_data, MLEclo)
-
+        string = "((X_1 + X_0)(1.0))(X_0 - (1.0 + (X_1 + X_0)(1.0)) - (X_0))"
+        string = "((((1.0)(1.0))/(X_0) - (1.0) + ((1.0)(1.0))/(X_0) - (1.0) + X_1)(X_1 + X_1))/((X_1)/(1.0) - ((((1.0)(1.0))/(X_0) - (1.0) + ((1.0)(1.0))/(X_0) - (1.0) + X_1)(X_1 + X_1)))"
         print(f"Noise Level: {noise_level}")
-        model = PytorchAGraph(
-                equation="(X_0 - 0.0)^2 + (X_1 - 0.0)^2 - (0.0)^2")
-        import pdb;pdb.set_trace()
+        model = PytorchAGraph(equation=string)
         print(f"SSQE from MLE Regression: {MLEclo(model)}")
 
         print(f"Model w/ MLE Parameters: {str(model)}")
@@ -56,8 +55,7 @@ def test_true_model():
         #print(f"\n-NMLL from iSMC: {ibff(model)}")
         print(f"iSMC Computation Time = {time.time()-stime}")
          
-        model = PytorchAGraph(
-                equation="(X_0 - 0.0)^2 + (X_1 - 0.0)^2 - (0.0)^2")
+        model = PytorchAGraph(equation=string)
         stime = time.time()
         print(f"\n-NMLL from iSMC(Laplace Approximation): {ilbff(model)}")
         print(f"iSMC(Laplace Approximation) Computation Time = {time.time()-stime}\n")

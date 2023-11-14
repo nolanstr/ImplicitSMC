@@ -46,7 +46,8 @@ if __name__ == '__main__':
     print(data)
 
     #string = "(X_0 - C_0)^2 + (X_1 - C_1)^2 - C_2" 
-    string = "(3)(X_1) + (X_1)((-5335494318.986037 + (3)(X_1))^(-1))"
+    #string = "(3)(X_1) + (X_1)((-5335494318.986037 + (3)(X_1))^(-1))"
+    string = "((((1.0)(1.0))/(X_0) - (1.0) + ((1.0)(1.0))/(X_0) - (1.0) + X_1)(X_1 + X_1))/((X_1)/(1.0) - ((((1.0)(1.0))/(X_0) - (1.0) + ((1.0)(1.0))/(X_0) - (1.0) + X_1)(X_1 + X_1)))"
     model = PytorchAGraph(equation=string)
     print(str(model))
     print(f"Model Complexity: {model.get_complexity()}")

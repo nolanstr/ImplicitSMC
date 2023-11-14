@@ -18,6 +18,5 @@ if __name__ == "__main__":
         print(f"Fitness: {ind.fitness}")
         print(f"Complexity: {ind.get_complexity()}")
         print(f"Stack Size: {ind.command_array.shape[0]}")
-        import pdb;pdb.set_trace()
     import pdb;pdb.set_trace()
 
