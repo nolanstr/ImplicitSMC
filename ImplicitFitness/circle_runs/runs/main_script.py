@@ -22,7 +22,7 @@ from bingo.symbolic_regression.implicit_regression import ImplicitRegression, \
 from bingo.symbolic_regression.bayes_fitness.implicit_bff_laplace \
                 import ImplicitLaplaceBayesFitnessFunction as ILBFF
 
-POP_SIZE = 100
+POP_SIZE = 500
 STACK_SIZE = 24
 MAX_GEN = 10000
 FIT_THRESH = -np.inf
@@ -37,7 +37,7 @@ def execute_generational_steps():
     cwd = os.getcwd()
     tag = cwd.split("/")[-1].split("_")[-1]
     data = np.load(
-            f"../../../data/circle_data/noisycircledata_{tag}.npy")[:,:2]
+        f"../../../../data/circle_data/noisycircledata_{tag}.npy")[:,:2]
     implicit_data = ImplicitTrainingData(data, np.empty_like(data))
 
     component_generator = ComponentGenerator(implicit_data.x.shape[1])
@@ -56,7 +56,7 @@ def execute_generational_steps():
     ibff = ILBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, 
             implicit_data, MLEclo)
 
-    evaluator = Evaluation(ibff, redundant=False, multiprocess=5)
+    evaluator = Evaluation(ibff, redundant=False, multiprocess=20)
 
     selection_phase=BayesCrowding()
     ea = GeneralizedCrowdingEA(evaluator, crossover,

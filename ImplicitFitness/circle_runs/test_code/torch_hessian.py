@@ -16,17 +16,17 @@ from bingo.symbolic_regression.bayes_fitness.implicit_bff_laplace \
 from bingo.symbolic_regression.agraph.pytorch_agraph import PytorchAGraph
                     
 
-PARTICLES = 30
-MCMC_STEPS = 7
+PARTICLES = 20
+MCMC_STEPS = 5
 ESS_THRESHOLD = 0.7
 
 def test_true_model():
-    noise_levels = ["01"]
+    noise_levels = ["002", "005", "007", "01"]
     for i, noise_level in enumerate(noise_levels):
 
 
         data = np.load(
-                f"../../data/circle_data/noisycircledata_{noise_level}.npy")[:,:2]
+    f"../../../data/circle_data/noisycircledata_{noise_level}.npy")[:,:2]
         implicit_data = ImplicitTrainingData(data, np.empty_like(data))
         fitness = MLERegression(implicit_data, order="second")
         optimizer = ScipyOptimizer(fitness, method='L-BFGS-B', 
@@ -46,7 +46,7 @@ def test_true_model():
         model = PytorchAGraph(
                 equation="(X_0 - 0.0)^2 + (X_1 - 0.0)^2 - (0.0)^2")
         stime = time.time()
-        print(f"\n-NMLL from iSMC: {ibff(model)}")
+        #print(f"\n-NMLL from iSMC: {ibff(model)}")
         print(f"iSMC Computation Time = {time.time()-stime}")
          
         model = PytorchAGraph(equation=string)
