@@ -31,37 +31,23 @@ def test_true_model():
 
 
         data = np.load(
-                f"../../data/circle_data/noisycircledata_{noise_level}.npy")[:,:2]
+                f"../../../data/circle_data/noisycircledata_{noise_level}.npy")[:,:2]
         implicit_data = ImplicitTrainingData(data, np.empty_like(data))
-        fitness = MLERegression(implicit_data, order="second")
-        optimizer = ScipyOptimizer(fitness, method='BFGS', 
+        fitness = MLERegression(implicit_data, order="first")
+        optimizer = ScipyOptimizer(fitness, method='lm', 
                         param_init_bounds=[-1.,1.], options={'maxiter':500})
         MLEclo = LocalOptFitnessFunction(fitness, optimizer)
         
-        ibff = IBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, 
-                implicit_data, MLEclo, ensemble=1)
-        ilbff = ILBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, 
-                implicit_data, MLEclo)
+        ilbff = ILBFF(implicit_data, MLEclo)
 
         print(f"Noise Level: {noise_level}")
-        model = PytorchAGraph(
-                equation="(X_0 - 0.0)^2 + (X_1 - 0.0)^2 - (0.0)^2")
-        import pdb;pdb.set_trace()
-        print(f"SSQE from MLE Regression: {MLEclo(model)}")
-
-        print(f"Model w/ MLE Parameters: {str(model)}")
-        model = PytorchAGraph(
-                equation="(X_0 - 0.0)^2 + (X_1 - 0.0)^2 - (0.0)^2")
-        stime = time.time()
-        #print(f"\n-NMLL from iSMC: {ibff(model)}")
-        print(f"iSMC Computation Time = {time.time()-stime}")
-         
-        model = PytorchAGraph(
-                equation="(X_0 - 0.0)^2 + (X_1 - 0.0)^2 - (0.0)^2")
+        string="(X_0 - 0.0)^2 + (X_1 - 0.0)^2 - 0.0^2"
+        model = PytorchAGraph(equation=string)
         stime = time.time()
         print(f"\n-NMLL from iSMC(Laplace Approximation): {ilbff(model)}")
         print(f"iSMC(Laplace Approximation) Computation Time = {time.time()-stime}\n")
-
+        f = model.evaluate_equation_at(data)
+        print(str(model))
 
 if __name__ == '__main__':
     test_true_model()

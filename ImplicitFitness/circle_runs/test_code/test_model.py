@@ -31,35 +31,26 @@ def test_true_model():
 
 
         data = np.load(
-                f"../../data/circle_data/noisycircledata_{noise_level}.npy")[:,:2]
+                f"../../../data/circle_data/noisycircledata_{noise_level}.npy")[:,:2]
         implicit_data = ImplicitTrainingData(data, np.empty_like(data))
-        fitness = MLERegression(implicit_data, order="second")
+        fitness = MLERegression(implicit_data, order="first", _f_tol=1)
         optimizer = ScipyOptimizer(fitness, method='BFGS', 
-                        param_init_bounds=[-1.,1.], options={'maxiter':500})
+                    param_init_bounds=[-1.,1.])#, options={'maxiter':500})
         MLEclo = LocalOptFitnessFunction(fitness, optimizer)
         
-        ibff = IBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, 
-                implicit_data, MLEclo, ensemble=1)
-        ilbff = ILBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, 
-                implicit_data, MLEclo)
-        string = "((X_1 + X_0)(1.0))(X_0 - (1.0 + (X_1 + X_0)(1.0)) - (X_0))"
-        string = "((((1.0)(1.0))/(X_0) - (1.0) + ((1.0)(1.0))/(X_0) - (1.0) + X_1)(X_1 + X_1))/((X_1)/(1.0) - ((((1.0)(1.0))/(X_0) - (1.0) + ((1.0)(1.0))/(X_0) - (1.0) + X_1)(X_1 + X_1)))"
+        ilbff = ILBFF(implicit_data, MLEclo)
+        #string = "C_0 - ((((X_1)(C_1 + C_1))(C_1 + C_1 - (X_1)))(C_1 + C_1)) + X_0"
+        string = "(X_1 + 2.3023120488111837 - (X_1))((2.3023120488111837 + X_1 - (X_1))(X_1 + 2.3023120488111837 - (X_1) - (X_0)))" 
+
         print(f"Noise Level: {noise_level}")
         model = PytorchAGraph(equation=string)
         print(f"SSQE from MLE Regression: {MLEclo(model)}")
 
-        print(f"Model w/ MLE Parameters: {str(model)}")
-        model = PytorchAGraph(
-                equation="(X_0 - 0.0)^2 + (X_1 - 0.0)^2 - (0.0)^2")
-        stime = time.time()
-        #print(f"\n-NMLL from iSMC: {ibff(model)}")
-        print(f"iSMC Computation Time = {time.time()-stime}")
-         
         model = PytorchAGraph(equation=string)
         stime = time.time()
         print(f"\n-NMLL from iSMC(Laplace Approximation): {ilbff(model)}")
         print(f"iSMC(Laplace Approximation) Computation Time = {time.time()-stime}\n")
-
+        print(f"Model: {str(model)}")
 
 if __name__ == '__main__':
     test_true_model()

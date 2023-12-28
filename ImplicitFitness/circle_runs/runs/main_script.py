@@ -22,19 +22,16 @@ from bingo.symbolic_regression.implicit_regression import ImplicitRegression, \
 from bingo.symbolic_regression.bayes_fitness.implicit_bff_laplace \
                 import ImplicitLaplaceBayesFitnessFunction as ILBFF
 
-POP_SIZE = 500
-STACK_SIZE = 24
+POP_SIZE = 1000
+STACK_SIZE = 32
 MAX_GEN = 10000
 FIT_THRESH = -np.inf
 CHECK_FREQ = 50
 MIN_GEN = 500
 
-PARTICLES = 30
-MCMC_STEPS = 5
-ESS_THRESHOLD = 0.7
-
 def execute_generational_steps():
     cwd = os.getcwd()
+    print(cwd)
     tag = cwd.split("/")[-1].split("_")[-1]
     data = np.load(
         f"../../../../data/circle_data/noisycircledata_{tag}.npy")[:,:2]
@@ -44,19 +41,18 @@ def execute_generational_steps():
     component_generator.add_operator("+")
     component_generator.add_operator("-")
     component_generator.add_operator("*")
-    component_generator.add_operator("pow")
+
     crossover = AGraphCrossover()
     mutation = AGraphMutation(component_generator)
     agraph_generator = AGraphGenerator(STACK_SIZE, component_generator,
                                        use_pytorch=True)
-    fitness = MLERegression(implicit_data)
+    fitness = MLERegression(implicit_data, order="first", _f_tol=1)
     optimizer = ScipyOptimizer(fitness, method='BFGS', 
-                    param_init_bounds=[-1.,1.], options={'maxiter':100})
+                param_init_bounds=[-1,1])#, options={'maxiter':500})
     MLEclo = LocalOptFitnessFunction(fitness, optimizer)
-    ibff = ILBFF(PARTICLES, MCMC_STEPS, ESS_THRESHOLD, 
-            implicit_data, MLEclo)
+    ilbff = ILBFF(implicit_data, MLEclo)
 
-    evaluator = Evaluation(ibff, redundant=False, multiprocess=20)
+    evaluator = Evaluation(ilbff, redundant=True, multiprocess=20)
 
     selection_phase=BayesCrowding()
     ea = GeneralizedCrowdingEA(evaluator, crossover,
